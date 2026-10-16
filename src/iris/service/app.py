@@ -1,14 +1,16 @@
-from contextlib import asynccontextmanager
 import time
-from typing import List, Literal
 import uuid
+from contextlib import asynccontextmanager
+from typing import Literal
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException
 import joblib
 import pandas as pd
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from ..config import settings
+
 from iris import db
+
+from ..config import settings
 
 
 class Features(BaseModel):
@@ -85,7 +87,7 @@ def predict(x: Features, bg: BackgroundTasks) -> Prediction:
 
 
 @app.post('/v1/predict/batch')
-def batch_predict(x: BatchFeatures, bg: BackgroundTasks) -> List[Prediction]:
+def batch_predict(x: BatchFeatures, bg: BackgroundTasks) -> list[Prediction]:
     t0 = time.perf_counter()
     payloads = [row.model_dump() for row in x.rows]
     df = pd.DataFrame(payloads)

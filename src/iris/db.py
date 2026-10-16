@@ -3,7 +3,6 @@ from psycopg.types.json import Json
 
 from .config import settings
 
-
 DDL = """
 CREATE TABLE IF NOT EXISTS predictions (
 
@@ -35,7 +34,7 @@ def save_prediction(
         return
     with psycopg.connect(settings.database_url) as conn:
             conn.execute(
-            "INSERT INTO predictions (request_id, model_version, features, class_predict, latency_ms) "
+            "INSERT INTO predictions (request_id, model_version, features, class_predict, latency_ms)"
             "VALUES (%s, %s, %s, %s, %s)",
             (request_id, model_version, Json(features), class_predict, latency_ms),
         )
