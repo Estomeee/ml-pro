@@ -28,7 +28,10 @@
 
     [Ссылка на красный прогон](https://github.com/Estomeee/ml-pro/actions/runs/39050726556)
 
-    [Ссылка на зелёный прогон]()
+    [Ссылка на зелёный прогон](https://github.com/Estomeee/ml-pro/actions/runs/39051165750)
+
+    В диагностке для пода можно наблюдать статус:
+    ``` CreateContainerConfigError```
 
 3. Ресурсы. Поставьте в requests память, которой на узле заведомо нет, например 1000000000Mi.
 
