@@ -94,7 +94,7 @@ jobs:
           sleep 2
 
           kubectl exec deploy/postgres -- psql -U postgres -d iris \
-            -tc "SELECT count(*) FROM predictions" | grep -q i
+            -tc "SELECT count(*) FROM predictions" | grep -q 1
 
       - name: диагностика 
         if: failure()
