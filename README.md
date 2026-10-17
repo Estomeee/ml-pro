@@ -37,7 +37,7 @@
 
     [Ссылка на красный прогон](https://github.com/Estomeee/ml-pro/actions/runs/39051653578)
 
-    [Ссылка на зелёный прогон]()
+    [Ссылка на зелёный прогон](https://github.com/Estomeee/ml-pro/actions/runs/39051767572)
 
     В 
 
