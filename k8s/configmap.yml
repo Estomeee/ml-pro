@@ -4,4 +4,4 @@ metadata:
   name: iris-config
 data:
   LOG_LEVEL: "INFO"
-  MODEL_PATH: artifacts/model.joblib
+  MODEL_PATH: artifacts/no_model.joblib
