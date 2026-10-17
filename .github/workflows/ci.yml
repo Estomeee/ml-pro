@@ -47,3 +47,59 @@ jobs:
           tags: ${{ env.IMAGE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions: {contents: read, packages: read}
+
+    steps:
+      - uses: a ctions/checkout@v7
+      - run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/iris-service/sha-${GITHUB_SHA}" >> $GITHUB_ENV #ghcr
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: helm/kind-action@v1
+        with: {claster_name: ci}
+      - name: образ в кластер
+        run:
+          docker pull "$IMAGE"
+          kind load docker-image "$IMAGE" --name cli
+      - name: подтягиваем секреты
+        env:
+          DB_PASSWORD: $ {{ secrets.DB_PASSWORD }}
+        run:
+          kubectl create secret generic iris-service \
+          --from-literal=POSTGRES_PASSWORD="$DB_PASSWORD" \
+          --from-literal=DATABASE_URL="postgresql://postgres:$DB_PASSWORD@postgres:5432/iris"
+      - name: база
+        run:
+          kubectl apply -f k8s.postgres.yml 
+          kubectl rollout status deploy/postgres --timeout=180s
+      - name: сервис
+        run: 
+          kubectl apply -f k8s/
+          kubectl set image deploy/iris-service api="$IMAGE"
+          kubectl rollout status deploy/iris-service --timeout=120s
+      - name: smoke
+        run: 
+          kubectl port-forward svc/iris-service 8080:80 &
+          sleep 5
+          curl --fail -s localhost:8080/health; echo
+          curl --fail -s -x POST localhost:8080/v1/predict \
+            -H "Content-Type: application/json" -d @good.json; echo
+          sleep 2
+
+          kubectl exec deploy/postgres --psql -U postgres -d iris \
+            -tc "SELECT count(*) FROM predictions" | grep -q i
+
+      - name: диагностика 
+        if: failure()
+
+        run:
+          kubectl get pods -o wide
+          kubectl describe deploy/iris-service | tail -20
+          kubectl logs deploy/iris-service --tail=10 || true
