@@ -19,8 +19,10 @@ spec:
           ports:
             - containerPort: 8000
           envFrom:
-            - configMapRef: {name:iris-config}
-            - scretRef: {name:iris-config}
+            - configMapRef:
+                name: iris-config
+            - secretRef:
+                name: iris-secrets
           startupProbe:
             httpGet: {path: /health, port: 8000}
             failureThreshold: 30
