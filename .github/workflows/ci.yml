@@ -77,7 +77,7 @@ jobs:
           --from-literal=DATABASE_URL="postgresql://postgres:$DB_PASSWORD@postgres:5432/iris"
       - name: база
         run: |
-          kubectl apply -f k8s.postgres.yml 
+          kubectl apply -f k8s/postgres.yml 
           kubectl rollout status deploy/postgres --timeout=180s
       - name: сервис
         run: |
