@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER}/iris-service/sha-${GITHUB_SHA}" >> $GITHUB_ENV #ghcr
+      - run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/iris-service/sha-${GITHUB_SHA}" >> $GITHUB_ENV #ghcr
       - uses: docker/login-action@v4
         with:
           registry: ghcr.io
