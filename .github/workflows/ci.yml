@@ -72,7 +72,7 @@ jobs:
         env:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          kubectl create secret generic iris-service \
+          kubectl create secret generic iris-secrets \
           --from-literal=POSTGRES_PASSWORD="$DB_PASSWORD" \
           --from-literal=DATABASE_URL="postgresql://postgres:$DB_PASSWORD@postgres:5432/iris"
       - name: база
