@@ -65,27 +65,27 @@ jobs:
       - uses: helm/kind-action@v1
         with: {claster_name: ci}
       - name: образ в кластер
-        run:
+        run: |
           docker pull "$IMAGE"
           kind load docker-image "$IMAGE" --name cli
       - name: подтягиваем секреты
         env:
           DB_PASSWORD: $ {{ secrets.DB_PASSWORD }}
-        run:
+        run: |
           kubectl create secret generic iris-service \
           --from-literal=POSTGRES_PASSWORD="$DB_PASSWORD" \
           --from-literal=DATABASE_URL="postgresql://postgres:$DB_PASSWORD@postgres:5432/iris"
       - name: база
-        run:
+        run: |
           kubectl apply -f k8s.postgres.yml 
           kubectl rollout status deploy/postgres --timeout=180s
       - name: сервис
-        run: 
+        run: |
           kubectl apply -f k8s/
           kubectl set image deploy/iris-service api="$IMAGE"
           kubectl rollout status deploy/iris-service --timeout=120s
       - name: smoke
-        run: 
+        run: |
           kubectl port-forward svc/iris-service 8080:80 &
           sleep 5
           curl --fail -s localhost:8080/health; echo
@@ -99,7 +99,7 @@ jobs:
       - name: диагностика 
         if: failure()
 
-        run:
+        run: |
           kubectl get pods -o wide
           kubectl describe deploy/iris-service | tail -20
           kubectl logs deploy/iris-service --tail=10 || true
