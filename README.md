@@ -11,8 +11,18 @@
 
 ### Пункт 3
 1. Конфиг. Укажите в ConfigMap путь к несуществующей модели.
+
     [Ссылка на красный прогон](https://github.com/Estomeee/ml-pro/actions/runs/39047796733)
-    [Ссылка на зелёный прогон]()
+
+    [Ссылка на зелёный прогон](https://github.com/Estomeee/ml-pro/actions/runs/39050411921)
+
+    В разделе с диагностикой указано: 
+    ```
+    FileNotFoundError: [Errno 2] No such file or directory: 'artifacts/no_model.joblib'
+
+    ERROR:    Application startup failed. Exiting.
+    ```
+    Можно сделать вывод, что в конфиге задан неверный путь.
 2. Секрет. Сделайте так, чтобы имя в secretRef не совпадало с именем секрета, который со‐
 здаёт пайплайн.
 3. Ресурсы. Поставьте в requests память, которой на узле заведомо нет, например 1000000000Mi.
