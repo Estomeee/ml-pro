@@ -85,16 +85,23 @@ jobs:
           kubectl set image deploy/iris-service api="$IMAGE"
           kubectl rollout status deploy/iris-service --timeout=120s
       - name: smoke
+        shell: bash
         run: |
           kubectl port-forward svc/iris-service 8080:80 &
           sleep 5
-          curl --fail -s localhost:8080/health; echo
-          curl --fail -s -X POST localhost:8080/v1/predict \
-            -H "Content-Type: application/json" -d @good.json; echo
-          sleep 2
+          curl --fail -sS localhost:8080/health
+          echo
 
-          kubectl exec deploy/postgres -- psql -U postgres -d iris \
-            -tc "SELECT count(*) FROM predictions" | grep -q 1
+          curl --fail -sS -X POST localhost:8080/v1/predict \
+            -H "Content-Type: application/json" \
+            -d @good.json \
+            | python3 -c "import json,sys; r=json.load(sys.stdin); assert r['class_predict'] in [0,1,2], r; print(r)"
+
+          sleep 2
+          count=$(kubectl exec deploy/postgres -- \
+            psql -U postgres -d iris -tAc "SELECT count(*) FROM predictions")
+          echo "Записей в predictions: $count"
+          test "$count" -gt 0
 
       - name: диагностика 
         if: failure()
